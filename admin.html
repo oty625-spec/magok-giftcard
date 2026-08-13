@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>마곡상품권 관리자</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#18212f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}.wrap{width:min(900px,calc(100% - 24px));margin:28px auto}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:22px;box-shadow:0 14px 40px rgba(15,23,42,.08)}h1{margin:0 0 8px;font-size:26px}.muted{color:#6b7280;font-size:13px;line-height:1.6}.login{display:flex;gap:8px;margin:18px 0}.login input{flex:1;padding:12px;border:1px solid #cbd5e1;border-radius:10px}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:800;cursor:pointer}.primary{background:#8d1f2d;color:#fff}.dark{background:#111827;color:#fff}.light{background:#eef2f7;color:#111827}.row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin:9px 0}.row input{min-width:0;padding:11px;border:1px solid #d1d5db;border-radius:9px}.head{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;font-size:12px;font-weight:800;color:#6b7280;margin-top:18px}.actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}.status{min-height:22px;margin-top:12px;font-size:13px;font-weight:700}.ok{color:#0f766e}.err{color:#b91c1c}.hidden{display:none}.notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px;font-size:12px;color:#9a3412;margin:14px 0}.link{display:inline-block;margin-top:14px;color:#2563eb;font-weight:700}@media(max-width:650px){.wrap{margin:12px auto}.card{padding:16px}.head{display:none}.row{grid-template-columns:1fr;border:1px solid #e5e7eb;padding:10px;border-radius:12px}.row input:nth-child(2)::before{content:'매입가'}.login{flex-direction:column}.actions .btn{flex:1}}</style>
+</head>
+<body><main class="wrap"><section class="card">
+<h1>마곡상품권 관리자</h1><p class="muted">이 페이지 주소는 공개 홈페이지에 표시되지 않습니다. 비밀번호가 맞아야 가격을 저장할 수 있습니다.</p>
+<div class="notice">관리자 비밀번호는 다른 사람에게 알려주지 마세요. 브라우저가 비밀번호 저장을 제안해도 공용 기기에서는 저장하지 않는 것이 좋습니다.</div>
+<div id="loginBox" class="login"><input id="password" type="password" autocomplete="current-password" placeholder="관리자 비밀번호"><button class="btn dark" id="loginBtn">관리자 확인</button></div>
+<div id="editor" class="hidden"><div class="head"><span>상품권명</span><span>매입가</span><span>판매가</span></div><div id="rows"></div><div class="actions"><button class="btn light" id="reloadBtn">최신값 다시 불러오기</button><button class="btn primary" id="saveBtn">전체 가격 저장</button></div></div>
+<div id="status" class="status"></div><a class="link" href="/">← 공개 홈페이지 보기</a>
+</section></main>
+<script>
+let products=[];let adminPassword='';const rows=document.getElementById('rows'),statusEl=document.getElementById('status'),editor=document.getElementById('editor');
+function status(msg,ok=false){statusEl.textContent=msg;statusEl.className='status '+(ok?'ok':'err')}
+function render(){rows.innerHTML=products.map((p,i)=>`<div class="row"><input value="${String(p.name||'').replaceAll('"','&quot;')}" data-i="${i}" data-f="name" aria-label="상품권명"><input type="number" min="0" value="${p.buy||0}" data-i="${i}" data-f="buy" aria-label="매입가"><input type="number" min="0" value="${p.sell||0}" data-i="${i}" data-f="sell" aria-label="판매가"></div>`).join('')}
+async function fetchPrices(){const r=await fetch('/api/prices',{cache:'no-store'});if(!r.ok)throw new Error('가격을 불러오지 못했습니다.');const d=await r.json();products=d.products||[];render()}
+async function verify(){adminPassword=document.getElementById('password').value;if(!adminPassword)return status('비밀번호를 입력해 주세요.');status('확인 중...');const r=await fetch('/api/admin-check',{method:'POST',headers:{'x-admin-password':adminPassword}});if(!r.ok)return status('관리자 비밀번호가 맞지 않습니다.');await fetchPrices();editor.classList.remove('hidden');document.getElementById('loginBox').classList.add('hidden');status('관리자 확인 완료',true)}
+document.getElementById('loginBtn').onclick=verify;document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')verify()});
+document.getElementById('reloadBtn').onclick=async()=>{try{await fetchPrices();status('최신 서버 가격을 불러왔습니다.',true)}catch(e){status(e.message)}};
+document.getElementById('saveBtn').onclick=async()=>{rows.querySelectorAll('input').forEach(el=>{const i=+el.dataset.i,f=el.dataset.f;products[i][f]=f==='name'?el.value.trim():Math.max(0,+el.value||0)});status('저장 중...');try{const r=await fetch('/api/prices',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':adminPassword},body:JSON.stringify({products})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'저장에 실패했습니다.');status('저장 완료! 모든 방문자에게 새 가격이 표시됩니다.',true)}catch(e){status(e.message)}};
+</script></body></html>
