@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="마곡상품권 - 상품권 매입·판매 시세와 수량별 금액을 빠르게 확인하세요." />
+  <title>마곡상품권 | 상품권 매입·판매</title>
+  <style>
+    :root {
+      --bg:#f5f7fb; --card:#fff; --text:#18212f; --muted:#6b7280; --line:#e6e8ee;
+      --navy:#121826; --blue:#2563eb; --red:#dc2626; --wine:#8d1f2d; --green:#0f9d73;
+      --shadow:0 14px 40px rgba(15,23,42,.08);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;background:var(--bg);color:var(--text)}
+    a{text-decoration:none;color:inherit} button,input{font:inherit}
+    .container{width:min(1180px,calc(100% - 32px));margin:auto}
+    .topbar{background:#0f172a;color:#dbeafe;font-size:13px;padding:9px 0}
+    .topbar .container{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+    .header-inner{height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:24px;letter-spacing:-.6px}
+    .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8d1f2d,#c63a4c);color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:0 8px 20px rgba(141,31,45,.25)}
+    nav{display:flex;gap:22px;font-size:14px;font-weight:700;color:#374151}
+    nav a:hover{color:#8d1f2d}
+    .hero{padding:42px 0 28px}
+    .hero-box{background:linear-gradient(135deg,#161b28,#2b3142);border-radius:24px;padding:34px;color:#fff;box-shadow:var(--shadow);display:grid;grid-template-columns:1.4fr .8fr;gap:28px;align-items:center}
+    .hero h1{font-size:34px;margin:0 0 10px;letter-spacing:-1px}.hero p{margin:0;color:#d1d5db;line-height:1.7}
+    .hero-badge{display:inline-block;margin-bottom:12px;background:rgba(255,255,255,.1);padding:7px 11px;border-radius:999px;font-size:12px;font-weight:800}
+    .hero-card{background:#fff;color:#111827;border-radius:18px;padding:20px}.hero-card strong{display:block;font-size:18px;margin-bottom:8px}.hero-card p{color:#6b7280;font-size:13px;line-height:1.6}
+    .cta-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+    .btn.primary{background:#8d1f2d;color:#fff}.btn.dark{background:#111827;color:#fff}.btn.light{background:#edf0f5;color:#111827}.btn.green{background:#0f9d73;color:#fff}
+    .section{padding:16px 0 34px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+    .section-head h2{margin:0;font-size:24px}.section-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
+    .table-wrap{overflow-x:auto} table{width:100%;border-collapse:collapse;min-width:1020px}
+    thead th{background:#252833;color:#fff;padding:16px 12px;font-size:14px;text-align:center} thead th:first-child{text-align:left;padding-left:20px}
+    tbody td{padding:15px 12px;border-bottom:1px solid var(--line);font-size:14px;background:#fff} tbody tr:hover td{background:#fafafa}
+    .name{font-weight:800}.sub{display:block;color:var(--muted);font-size:12px;margin-top:4px}.price{font-weight:900;font-size:15px;white-space:nowrap}.buy{color:var(--blue)}.sell{color:var(--red)}.rate{font-size:12px;color:var(--muted);margin-left:4px}.amount{font-weight:800;white-space:nowrap}
+    .qty{width:82px;border:1px solid #cbd5e1;border-radius:9px;padding:9px;text-align:center;outline:none}.qty:focus{border-color:#64748b;box-shadow:0 0 0 3px rgba(100,116,139,.12)}
+    .summary{display:grid;grid-template-columns:1fr 1fr;background:#8d1f2d;color:#fff}.summary-item{padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-right:1px solid rgba(255,255,255,.12)}.summary-label{font-size:14px;opacity:.9}.summary-value{font-size:23px;font-weight:900}
+    .notice{text-align:center;color:#8d1f2d;font-weight:800;font-size:13px;margin-top:14px}
+    .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.info-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 24px rgba(15,23,42,.05)}.info-card h3{margin:0 0 8px;font-size:16px}.info-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+    footer{margin-top:20px;background:#101522;color:#cbd5e1;padding:34px 0;font-size:13px}.footer-grid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-brand{color:#fff;font-size:18px;font-weight:900;margin-bottom:8px}.small{font-size:12px;color:#94a3b8;line-height:1.6}
+    .fab{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:30}.fab a{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 10px 25px rgba(0,0,0,.18)}.fab .phone{background:#8d1f2d}.fab .chat{background:#0f9d73}
+    dialog{border:0;border-radius:18px;width:min(860px,calc(100% - 24px));padding:0;box-shadow:0 30px 80px rgba(0,0,0,.25)} dialog::backdrop{background:rgba(15,23,42,.55)}
+    .admin-head{padding:18px 20px;background:#111827;color:#fff;display:flex;justify-content:space-between;align-items:center}.admin-body{padding:20px;max-height:70vh;overflow:auto}.admin-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px}.admin-grid input{padding:9px;border:1px solid #d1d5db;border-radius:9px}.admin-note{font-size:12px;color:#6b7280;line-height:1.6;margin:0 0 14px}.admin-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+    @media(max-width:850px){nav{display:none}.hero-box{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}.summary{grid-template-columns:1fr}.summary-item{border-right:0;border-bottom:1px solid rgba(255,255,255,.12)}}
+    @media(max-width:600px){
+      html,body{width:100%;max-width:100%;overflow-x:hidden}
+      body{background:#f7f8fb}
+      .container{width:100%;max-width:100%;padding-left:10px;padding-right:10px}
+      header{position:relative}
+      .topbar .container{padding-left:10px;padding-right:10px}
+
+      .topbar{font-size:11px;padding:7px 0}.topbar .container{gap:4px}
+      .header-inner{height:62px}.brand{font-size:21px}.logo{width:38px;height:38px}
+      .hero{padding:14px 0 18px}.hero-box{padding:20px;border-radius:18px;gap:14px}.hero h1{font-size:25px;line-height:1.28}.hero p{font-size:13px}.hero-card{padding:16px}
+      .cta-row .btn{flex:1;min-width:130px}
+      .section{padding:10px 0 24px}.section-head{align-items:flex-start;margin-bottom:10px}.section-head h2{font-size:21px}.section-head p{font-size:12px;line-height:1.5}
+      .toolbar{width:100%}.toolbar .btn{flex:1;padding:10px 12px;font-size:13px}
+      .panel{border-radius:16px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+      .table-wrap{overflow:visible;padding:10px}
+      table{min-width:0;width:100%;display:block} thead{display:none} tbody{display:block}
+      tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:9px 10px;padding:14px 12px;margin-bottom:10px;border:1px solid var(--line);border-radius:14px;background:#fff}
+      tbody td{display:block;padding:0;border:0;background:transparent!important;font-size:13px;min-width:0}
+      tbody td:first-child{grid-column:1/-1;padding-bottom:9px;border-bottom:1px solid #eef0f4;font-size:15px}
+      tbody td:nth-child(2)::before{content:'매입가';display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+      tbody td:nth-child(3)::before{content:'매입 수량';display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+      tbody td:nth-child(4)::before{content:'매입 금액';display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+      tbody td:nth-child(5)::before{content:'판매가';display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+      tbody td:nth-child(6)::before{content:'판매 수량';display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+      tbody td:nth-child(7)::before{content:'판매 금액';display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+      .price{font-size:16px}.rate{display:block;margin:2px 0 0;font-size:11px}.amount{font-size:14px}
+      .qty{width:100%;height:42px;padding:8px;font-size:16px;background:#fff}
+      .summary{grid-template-columns:1fr}.summary-item{padding:16px 18px}.summary-value{font-size:20px}
+      .notice{font-size:12px;margin-top:10px}
+      .info-grid{gap:10px}.info-card{padding:16px;border-radius:15px}.info-card h3{font-size:15px}.info-card p{font-size:12px}
+      footer{padding:26px 0 86px}.footer-grid{display:block}.footer-grid>div+div{margin-top:18px}
+      .fab{right:14px;bottom:14px}.fab a{width:54px;height:54px}
+      .admin-grid{grid-template-columns:1fr}.admin-body{padding:14px}.admin-head{padding:14px 16px}
+      .hero-box{width:100%;min-width:0}
+      .hero-box>*{min-width:0}
+      .hero h1{word-break:keep-all}
+      .hero-card{width:100%;min-width:0}
+      .table-wrap{width:100%;max-width:100%;overflow:hidden}
+      table,tbody{width:100%!important;max-width:100%!important}
+      tbody tr{width:100%;max-width:100%;overflow:hidden}
+      tbody td{overflow-wrap:anywhere}
+      .summary{width:100%;max-width:100%;overflow:hidden}
+      .fab{z-index:30}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar"><div class="container"><span>마곡상품권 · 상품권 매입·판매 전문</span><span>※ 시세는 변동될 수 있으니 방문 전 문의해 주세요.</span></div></div>
+  <header><div class="container header-inner"><a class="brand" href="#top"><span class="logo">M</span><span>마곡상품권</span></a><nav><a href="#price">오늘의 시세</a><a href="#guide">이용안내</a><a href="#contact">문의</a></nav></div></header>
+
+  <main id="top">
+    <section class="hero"><div class="container"><div class="hero-box">
+      <div><span class="hero-badge">MAGOK GIFT CARD</span><h1>상품권 매입·판매,<br>빠르고 간편하게 확인하세요.</h1><p>상품권별 매입가와 판매가를 한눈에 보고, 수량을 입력하면 예상 금액이 자동으로 계산됩니다.</p><div class="cta-row"><a class="btn primary" href="#price">시세 확인하기</a><a class="btn light" href="#contact">문의 안내</a></div></div>
+      <div class="hero-card"><strong>오늘 거래 전 꼭 확인하세요</strong><p>상품권 시세는 시장 상황에 따라 수시로 변동될 수 있습니다. 실제 거래 가격은 매장 확인 시점의 시세가 적용됩니다.</p></div>
+    </div></div></section>
+
+    <section class="section" id="price"><div class="container">
+      <div class="section-head"><div><h2>상품권 매입·판매 시세</h2><p>수량을 입력하면 예상 금액이 자동으로 계산됩니다.</p></div><div class="toolbar"><button class="btn light" id="resetBtn">수량 초기화</button></div></div>
+      <section class="panel"><div class="table-wrap"><table><thead><tr><th>상품권명</th><th>매입가</th><th>매입 수량</th><th>매입 금액</th><th>판매가</th><th>판매 수량</th><th>판매 금액</th></tr></thead><tbody id="productBody"></tbody></table></div>
+        <div class="summary"><div class="summary-item"><span class="summary-label">총 매입 합계</span><span class="summary-value" id="buyTotal">0원</span></div><div class="summary-item"><span class="summary-label">총 판매 합계</span><span class="summary-value" id="sellTotal">0원</span></div></div>
+      </section><div class="notice">수량을 입력하시면 예상 금액이 표시됩니다.</div>
+    </div></section>
+
+    <section class="section" id="guide"><div class="container"><div class="section-head"><div><h2>이용 안내</h2><p>방문 전 상품권 종류와 수량을 알려주시면 더 빠르게 안내받을 수 있습니다.</p></div></div>
+      <div class="info-grid"><div class="info-card"><h3>01. 시세 확인</h3><p>원하시는 상품권의 매입·판매 가격을 확인합니다.</p></div><div class="info-card"><h3>02. 수량 계산</h3><p>수량을 입력해 예상 거래 금액을 바로 계산합니다.</p></div><div class="info-card"><h3>03. 최종 문의</h3><p>실제 거래 전 전화 또는 카카오톡으로 최종 시세를 확인합니다.</p></div></div>
+    </div></section>
+
+    <section class="section" id="contact"><div class="container"><div class="section-head"><div><h2>문의 안내</h2><p>마곡역 3번 출구에서 약 70m 거리입니다. 방문 전 시세를 확인해 주세요.</p></div></div>
+      <div class="info-grid"><div class="info-card"><h3>전화 문의</h3><p><strong>0507-1400-3988</strong><br>24시간 · 연중무휴</p></div><div class="info-card"><h3>카카오톡 문의</h3><p><strong>카카오톡 채널 연결 예정</strong><br>채널 링크를 알려주시면 버튼에 연결합니다.</p></div><div class="info-card"><h3>매장 위치</h3><p><strong>서울 강서구 마곡중앙로 76, 4층 431호</strong><br>마곡역 3번 출구에서 약 70m</p></div></div>
+    </div></section>
+  </main>
+
+  <footer><div class="container footer-grid"><div><div class="footer-brand">마곡상품권</div><div class="small">상품권 매입·판매 전문<br>실제 거래 가격은 매장 확인 시점의 시세가 적용됩니다.</div></div><div class="small">대표전화 0507-1400-3988<br>영업시간 24시간 · 연중무휴<br>주소 서울 강서구 마곡중앙로 76, 4층 431호<br>© 마곡상품권</div></div></footer>
+  <div class="fab"><a class="phone" href="tel:050714003988" title="전화">☎</a><a class="chat" href="#contact" title="카카오톡">톡</a></div>
+
+
+<script>
+  const defaultProducts = [
+    {name:'신세계백화점',denom:'10만원권',buy:95700,sell:95900},
+    {name:'롯데백화점',denom:'10만원권',buy:96650,sell:96800},
+    {name:'현대백화점',denom:'10만원권',buy:96550,sell:96700},
+    {name:'갤러리아백화점',denom:'10만원권',buy:96450,sell:96600},
+    {name:'국민관광상품권',denom:'10만원권',buy:96500,sell:96700},
+    {name:'금강제화 상품권',denom:'10만원권',buy:0,sell:74000}
+  ];
+  let products = structuredClone(defaultProducts);
+  const body=document.getElementById('productBody'), buyTotalEl=document.getElementById('buyTotal'), sellTotalEl=document.getElementById('sellTotal');
+  const won=n=>`${Number(n||0).toLocaleString('ko-KR')}원`;
+  const rate=p=>p<=0?'100.00%':`${((100000-p)/1000).toFixed(2)}%`;
+  function renderRows(){body.innerHTML=products.map((p,i)=>`<tr><td class="name">${p.name}<span class="sub">(${p.denom})</span></td><td><span class="price buy">${won(p.buy)}</span><span class="rate">(${rate(p.buy)})</span></td><td style="text-align:center"><input class="qty" type="number" min="0" step="1" value="0" data-type="buy" data-index="${i}"></td><td class="amount" id="buyAmount-${i}">0원</td><td><span class="price sell">${won(p.sell)}</span><span class="rate">(${rate(p.sell)})</span></td><td style="text-align:center"><input class="qty" type="number" min="0" step="1" value="0" data-type="sell" data-index="${i}"></td><td class="amount" id="sellAmount-${i}">0원</td></tr>`).join('')}
+  function calculate(){let bt=0,st=0;document.querySelectorAll('.qty').forEach(input=>{const i=+input.dataset.index,t=input.dataset.type,q=Math.max(0,+input.value||0),a=products[i][t]*q;document.getElementById(`${t}Amount-${i}`).textContent=won(a);t==='buy'?bt+=a:st+=a});buyTotalEl.textContent=won(bt);sellTotalEl.textContent=won(st)}
+  async function loadPrices(){
+    try{const r=await fetch('/api/prices',{cache:'no-store'});if(!r.ok)throw new Error();const data=await r.json();if(Array.isArray(data.products))products=data.products}catch(e){}
+    renderRows();calculate();
+  }
+  body.addEventListener('input',e=>{if(e.target.classList.contains('qty'))calculate()});
+  document.getElementById('resetBtn').onclick=()=>{document.querySelectorAll('.qty').forEach(e=>e.value=0);calculate()};
+  loadPrices();
+</script>
+</body>
+</html>
