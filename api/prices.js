@@ -8,7 +8,7 @@ module.exports=async(req,res)=>{
   res.setHeader('Cache-Control','no-store, max-age=0');
   if(req.method==='GET'){
     try{const saved=await redisGet('magok:prices');return res.status(200).json({products:saved||DEFAULT_PRODUCTS,storageConfigured:!!redisConfig()})}
-    catch{return res.status(200).json({products:DEFAULT_PRODUCTS,storageConfigured:false})}
+   catch(e){return res.status(200).json({products:DEFAULT_PRODUCTS,storageConfigured:!!redisConfig(),error:String(e?.message||e)})}
   }
   if(req.method==='POST'){
     if(!process.env.ADMIN_PASSWORD)return res.status(503).json({error:'관리자 비밀번호가 아직 설정되지 않았습니다.'});
